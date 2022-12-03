@@ -30,7 +30,6 @@ const UserSchema = new Schema(
       type: String,
       maxLength: 11,
       minLength: 9,
-      required: true,
     },
     avatar: {
       type: String,
@@ -54,4 +53,7 @@ const UserSchema = new Schema(
     timestamps: true,
   }
 );
+UserSchema.methods.checkPassword = function (password) {
+  return password == this.password;
+};
 module.exports = mongoose.model("User", UserSchema);
