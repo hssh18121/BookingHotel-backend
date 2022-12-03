@@ -1,28 +1,19 @@
+require("dotenv").config();
+require("./utils/database")();
 const express = require("express");
-const mongoose = require("mongoose");
-const testRouter = require("./routes/testRoutes");
-const userRouter = require("./routes/userRoutes");
-const hotelRouter = require("./routes/hotelRoutes");
+const morgan = require("morgan");
+const route = require("./routes");
+const PORT = process.env.PORT || 3000;
 const app = express();
 
-const uri =
-  "mongodb+srv://hason:hs123478@cluster0.orlh8eg.mongodb.net/test?retryWrites=true&w=majority";
+app.use(
+  express.urlencoded({
+    extended: true,
+  })
+);
+app.use(express.json());
+app.use(morgan("combined"));
 
-async function connect() {
-  try {
-    await mongoose.connect(uri);
-    console.log("Connected to mongoDB");
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-connect();
-
-app.use(testRouter);
-app.use(userRouter);
-app.use(hotelRouter);
-
-app.listen(5000, () => {
-  console.log("Server started on port 5000");
+app.listen(PORT, () => {
+  console.log(`Example app listening on port localhost:${PORT}`);
 });
