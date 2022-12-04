@@ -14,5 +14,18 @@ Project học phần Thực hành lập trình web - Server side
     username: ...,
     password: ...,
     fullname: ...,
-    email: ...,
+    email: ...(or phone),
+    }
+  GET "api/hotel/all"
+    query{
+    limit: ..., //example: 2
+    from: ..., //example: 1
+    to: ..., //example: 3
+    }
+  GET "api/hotel/:id"
+  GET "api/hotel/:id/rooms"
+    query{
+    limit: ..., //example: 2
+    from: ..., //example: 1
+    to: ..., //example: 3
     }
