@@ -10,8 +10,8 @@ function validateEmail(email = "") {
   return false;
 }
 function validatePassword(password = "") {
-  if (password.length < 6) {
-    return "Password is too short (password length must be more than 6 characters)";
+  if (password.length < 8) {
+    return "Password is too short (password length must be more than 8 characters)";
   }
   return false;
 }
