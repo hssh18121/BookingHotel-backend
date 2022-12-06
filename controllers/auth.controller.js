@@ -8,19 +8,19 @@ const {
 } = require("../utils/validate");
 class AuthController {
   async login(req = new Request(), res) {
-    const { username, password } = req.body;
-    if (!username || !password) {
+    const { email, password } = req.body;
+    if (!email || !password) {
       return res.status(400).json({
         status: "error",
         message: "Username and password are required",
       });
     }
-    let validateErr = validateUsername(username) || validatePassword(username);
+    let validateErr = validateEmail(email) || validatePassword(email);
     if (validateErr) {
       return res.status(400).json({ status: "error", message: validateErr });
     }
     try {
-      const user = await User.findOne({ username });
+      const user = await User.findOne({ email });
       if (!user) {
         return res
           .status(400)
@@ -31,7 +31,7 @@ class AuthController {
           .status(400)
           .json({ status: "error", message: "Password is incorrect" });
       }
-      return res.status(200).json(user);
+      return res.status(200).json({ status: "success", user: user });
     } catch (error) {
       return res.status(503).json({
         status: "error",
@@ -65,12 +65,10 @@ class AuthController {
       }
       user = await User.findOne(email ? { email } : { phone });
       if (user) {
-        return res
-          .status(403)
-          .json({
-            status: "error",
-            message: "Email or phone number is already in use",
-          });
+        return res.status(403).json({
+          status: "error",
+          message: "Email or phone number is already in use",
+        });
       }
       user = new User({
         username,

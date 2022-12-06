@@ -1,5 +1,7 @@
 const apiRoute = require("./api");
+const cors = require("cors");
 function route(app) {
+  app.use(cors());
   app.use("/api", apiRoute);
   app.use("/", (req, res) =>
     res.status(403).send(`${error403HTML}
