@@ -1,48 +1,36 @@
+const validator = require("validator");
 function validateEmail(email = "") {
-  if (
-    !email ||
-    !email.match(
-      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-    )
-  ) {
-    return "Email is invalid";
-  }
-  return false;
+  return validator.isEmail(email) ? false : "Email is invalid";
 }
 function validatePassword(password = "") {
-  if (password.length < 8) {
-    return "Password is too short (password length must be more than 8 characters)";
-  }
-  return false;
+  return validator.isStrongPassword(password, {
+    minLength: 8,
+    minLowercase: 0,
+    minUppercase: 0,
+    minNumbers: 0,
+    minSymbols: 0,
+  })
+    ? false
+    : "Password is too short (password length must be more than 8 characters)";
 }
 function validateUsername(username = "") {
-  if (username.length < 6) {
-    return "Username is too short (username length must be more than 6 characters)";
-  }
-  if (username.length > 63) {
-    return "Username is too long (username length must be less than 63 characters)";
-  }
-  if (!username.match(/^[a-zA-Z0-9\_.]+$/)) {
+  if (!validator.isAlphanumeric(username, "en-US")) {
     return "Username must contain: letters a-z, number 0-9, and _.";
+  }
+  if (!validator.isLength(username, { min: 6, max: 63 })) {
+    return "Username must be between 6 and 63 characters";
   }
   return false;
 }
 function validateFullName(fullName = "") {
-  let length = fullName.length;
-  if (length < 6 || length > 255) {
-    return "Full name must be between 6 and 255 characters";
-  }
-  return false;
+  return validator.isLength(fullName, { min: 6, max: 255 })
+    ? false
+    : "Full name must be between 6 and 255 characters";
 }
 function validatePhoneNumber(phoneNumber = "") {
-  if (
-    !phoneNumber.match(
-      /^(0?)(3[2-9]|5[6|8|9]|7[0|6-9]|8[0-6|8|9]|9[0-4|6-9])[0-9]{7}$/
-    )
-  ) {
-    return "PhoneNumber is not valid";
-  }
-  return false;
+  return validator.isMobilePhone(phoneNumber, "vi-VN")
+    ? false
+    : "Phone number is not valid";
 }
 module.exports = {
   validateEmail,

@@ -33,7 +33,7 @@ class AuthController {
       }
       return res.status(200).json({
         status: "success",
-        token: user.genToken(),
+        data: { token: user.genToken(), expiresIn: process.env.JWT_EXPIRES_IN },
       });
     } catch (error) {
       return res.status(503).json({
@@ -53,12 +53,11 @@ class AuthController {
     }
 
     let validateErr =
-      validateUsername(username) ||
-      validatePassword(password) ||
       validateEmail(email) ||
-      phone
-        ? validatePhoneNumber(phone)
-        : false || validateFullName(fullname);
+      validatePassword(password) ||
+      validateUsername(username) ||
+      (phone ? validatePhoneNumber(phone) : false) ||
+      validateFullName(fullname);
     if (validateErr) {
       return res.status(400).json({ status: "error", message: validateErr });
     }
@@ -69,13 +68,6 @@ class AuthController {
           .status(400)
           .json({ status: "error", message: "Email is already in use" });
       }
-      // user = await User.findOne(email ? { email } : { phone });
-      // if (user) {
-      //   return res.status(403).json({
-      //     status: "error",
-      //     message: "Email or phone number is already in use",
-      //   });
-      // }
       new User({
         username,
         password,

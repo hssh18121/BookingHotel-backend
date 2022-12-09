@@ -37,7 +37,7 @@ const UserSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ["user", "admin"],
+      enum: ["user", "admin", "hotel"],
       default: "user",
     },
     createdAt: {
@@ -55,6 +55,9 @@ const UserSchema = new Schema(
 );
 UserSchema.methods.checkPassword = function (password) {
   return bcrypt.compareSync(password, this.password);
+};
+UserSchema.methods.setPassword = function (password) {
+  this.password = bcrypt.hashSync(password, process.env.SALT_ROUNDS - 0);
 };
 UserSchema.methods.saveWithHashPassword = async function () {
   try {

@@ -3,4 +3,5 @@ module.exports = {
   Room: require("./Room.model"),
   Hotel: require("./Hotel.model"),
   Booking: require("./Booking.model"),
+  Rating: require("./Rating.model"),
 };
