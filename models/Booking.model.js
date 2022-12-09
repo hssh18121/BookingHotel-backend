@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 const BookingSchema = new Schema(
   {
-    hotelId: { type: Schema.ObjectId, ref: "Hotel", required: true },
-    roomId: { type: Schema.ObjectId, ref: "Room", required: true },
-    uId: { type: Schema.ObjectId, ref: "User", required: true },
+    hotel: { type: Schema.ObjectId, ref: "Hotel", required: true },
+    room: { type: Schema.ObjectId, ref: "Room", required: true },
+    user: { type: Schema.ObjectId, ref: "User", required: true },
     status: {
       type: String,
       enum: ["success", "failure", "processing"],

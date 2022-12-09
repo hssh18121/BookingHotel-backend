@@ -7,24 +7,7 @@ const HotelSchema = new Schema(
       maxLength: 127,
       required: true,
     },
-    star: {
-      type: Number,
-      max: 5,
-      min: 0,
-      required: true,
-    },
-    ratings: [
-      {
-        uid: { type: Schema.ObjectId, ref: "User" },
-        comment: {
-          type: String,
-          maxLength: 255,
-        },
-        star: { type: Number, max: 5, min: 0 },
-        createdAt: { type: Date, default: Date.now() },
-      },
-    ],
-    city: { type: String, enum: ["Hà Nội", "TP.Hồ Chí Minh"] },
+    province: { type: String, maxLength: 63, required: true },
     address: {
       type: String,
       maxLength: 255,

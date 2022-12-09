@@ -2,10 +2,12 @@ require("dotenv").config();
 require("./utils/database")();
 const express = require("express");
 const morgan = require("morgan");
+const cors = require("cors");
 const route = require("./routes");
 const PORT = process.env.PORT || 3000;
 const app = express();
 
+app.use(cors());
 app.use(
   express.urlencoded({
     extended: true,

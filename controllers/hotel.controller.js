@@ -2,11 +2,12 @@ const { Hotel, Room } = require("../models");
 const isValid = require("mongoose").Types.ObjectId.isValid;
 const slice = require("../utils/slice");
 class HotelController {
+  //
   async getAll(req, res) {
     const { limit, from, to /*sort, asc*/ } = req.query;
     try {
       let hotels = slice(await Hotel.find({}), limit, from, to);
-      return res.status(200).json(hotels);
+      return res.status(200).json({ status: "success", data: { hotels } });
     } catch (error) {
       return res.status(503).json({
         status: "error",
@@ -28,7 +29,7 @@ class HotelController {
           .status(403)
           .json({ status: "error", message: "Can't find hotel" });
       }
-      return res.status(200).json(hotel);
+      return res.status(200).json({ status: "success", data: { hotel } });
     } catch (error) {
       return res.status(503).json({
         status: "error",
@@ -36,6 +37,7 @@ class HotelController {
       });
     }
   }
+  //
   async getRooms(req = new Request(), res) {
     const id = req.params.id;
     if (!isValid(id)) {
@@ -57,11 +59,30 @@ class HotelController {
       );
       const { limit, from, to, sort, asc } = req.query;
       rooms = slice(rooms, limit, from, to);
-      return res.status(200).json(rooms);
+      return res.status(200).json({ status: "success", data: { rooms } });
     } catch (error) {
       return res.status(503).json({
         status: "error",
         message: "Service error. Please try again later" + error.stack,
+      });
+    }
+  }
+  //GET /api/hotels/province/:province
+  async getByProvince(req = new Request(), res = new Response()) {
+    const province = req.params.province;
+    try {
+      const { limit, from, to, sort, asc } = req.query;
+      const hotels = slice(
+        await Hotel.find({ province: province }),
+        limit,
+        from,
+        to
+      );
+      return res.status(200).json({ status: "success", data: { hotels } });
+    } catch (error) {
+      return res.status(503).json({
+        status: "error",
+        message: "Service error. Please try again later",
       });
     }
   }
