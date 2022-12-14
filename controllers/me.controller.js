@@ -85,17 +85,15 @@ class MeController {
       return res.status(400).json({ status: "error", message: validateErr });
     }
     try {
-      const user = await User.findById(req.user.id);
-      if (!user) {
+      const updateResult = await User.updateOne(
+        { _id: req.user.id },
+        { fullname, phone, username }
+      );
+      if (updateResult.matchedCount === 0) {
         return res
           .status(400)
           .json({ status: "error", message: "Can't find user" });
       }
-      user.fullname = fullname;
-      user.phone = phone;
-      user.username = username;
-
-      await User.updateOne({ _id: user._id }, { fullname, phone, username });
       return res
         .status(200)
         .json({ status: "success", message: "Update Profile Success" });
