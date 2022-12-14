@@ -20,7 +20,6 @@ const RatingSchema = new Schema(
     },
     comment: {
       type: String,
-      maxLength: 255,
     },
     createdAt: {
       type: Date,

@@ -15,10 +15,13 @@ const RoomSchema = new Schema(
       type: String,
       maxLength: 1023,
     },
+    image: [{ type: String, default: "" }],
     price: {
       type: Number,
       required: true,
     },
+    size: { type: Number, default: 0 },
+    hotel: { type: Schema.ObjectId, ref: "Hotel" },
     createdAt: {
       type: Date,
       default: Date.now(),

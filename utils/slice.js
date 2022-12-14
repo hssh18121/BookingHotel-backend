@@ -1,4 +1,4 @@
-function slice(arr, limit, from, to) {
+function slice(arr, { limit, from, to }) {
   if (limit) {
     arr = arr.slice(0, limit);
   } else if (from) {
