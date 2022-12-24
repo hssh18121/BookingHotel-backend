@@ -33,7 +33,11 @@ class AuthController {
       }
       return res.status(200).json({
         status: "success",
-        data: { token: user.genToken(), expiresIn: process.env.JWT_EXPIRES_IN },
+        data: {
+          token: user.genToken(),
+          expiresIn: process.env.JWT_EXPIRES_IN,
+          username: user.username,
+        },
       });
     } catch (error) {
       return res.status(503).json({
@@ -75,9 +79,11 @@ class AuthController {
         fullname,
         phone,
       }).saveWithHashPassword();
-      return res
-        .status(200)
-        .json({ status: "success", message: "Signup successfully" });
+
+      return res.status(200).json({
+        status: "success",
+        message: "Signup successfully",
+      });
     } catch (error) {
       res.status(503).json({
         status: "error",
