@@ -3,6 +3,7 @@ const User = require("../models").User;
 class Authorization {
   protect(req = new Request(), res = new Response(), next) {
     const auth = req.headers.authorization;
+
     if (!auth?.startsWith("Bearer")) {
       return res
         .status(401)

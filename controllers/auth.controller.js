@@ -37,6 +37,7 @@ class AuthController {
           token: user.genToken(),
           expiresIn: process.env.JWT_EXPIRES_IN,
           username: user.username,
+          userID: user.id,
         },
       });
     } catch (error) {

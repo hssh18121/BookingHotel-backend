@@ -11,7 +11,7 @@ class MeController {
    */
   async getMe(req, res) {
     try {
-      const user = await User.findById(req.user.id).select(
+      const user = await User.findById(req.params.id).select(
         "-password -__v -role"
       );
       return res.status(200).json({ status: "success", data: { user } });
@@ -86,7 +86,7 @@ class MeController {
     }
     try {
       const updateResult = await User.updateOne(
-        { _id: req.user.id },
+        { _id: req.params.id },
         { fullname, phone, username }
       );
       if (updateResult.matchedCount === 0) {
