@@ -48,13 +48,19 @@ class AuthController {
     }
   }
   async signup(req = new Request(), res) {
-    const { username, password, email, fullname, phone } = req.body;
-    if (!username || !password || !fullname || !email) {
+    const { username, password, confirmPassword, email, fullname, phone } =
+      req.body;
+    if (!username || !password || !fullname || !email || !confirmPassword) {
       return res.status(400).json({
         status: "error",
         message:
           "Username, password, fullname, phoneNumber and email are required",
       });
+    }
+    if (password !== confirmPassword) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "Password must be the same" });
     }
 
     let validateErr =
