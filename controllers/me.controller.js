@@ -5,6 +5,7 @@ const {
   validatePhoneNumber,
   validateUsername,
 } = require("../utils/validate");
+const { uploadFile, deleteFile } = require("../utils/googleApi");
 class MeController {
   /**
    * GET /api/me/:id
@@ -98,6 +99,45 @@ class MeController {
         .status(200)
         .json({ status: "success", message: "Update Profile Success" });
     } catch (error) {
+      return res.status(503).json({
+        status: "error",
+        message: "Service error. Please try again later",
+      });
+    }
+  }
+  /*
+   * PUT /api/me/avatar
+   */
+  async updateAvatar(req, res) {
+    try {
+      const { avatar: file } = req.files;
+      if (!file) {
+        return res
+          .status(400)
+          .json({ status: "error", message: "avatar is required" });
+      }
+      file.name = Date.now() + file.name.slice(-4);
+      const avatar = await uploadFile(file);
+      const user = await User.findById(req.user.id);
+      const updateResult = await User.updateOne(
+        { _id: req.user.id },
+        { avatar }
+      );
+      let oldAvatar = user.avatar;
+      if (oldAvatar) {
+        oldAvatar = oldAvatar.split("&").slice(-1)[0].split("=")[1];
+        await deleteFile(oldAvatar);
+      }
+
+      return res.status(200).json({ status: "success", data: { avatar } });
+    } catch (error) {
+      console.log(error);
+      if (error.message === "File must be jpg or jpeg") {
+        return res
+          .status(400)
+          .json({ status: "error", message: "File must be jpg or jpeg" });
+      }
+
       return res.status(503).json({
         status: "error",
         message: "Service error. Please try again later",
