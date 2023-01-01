@@ -30,9 +30,7 @@ class RatingController {
         comment,
       });
       await newRating.save();
-      return res
-        .status(200)
-        .json({ status: "success", message: "Rating successfully" });
+      return res.status(200).json({ status: "success", data: newRating });
     } catch (error) {
       return res.status(503).json({
         status: "error",
