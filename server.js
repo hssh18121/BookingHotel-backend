@@ -5,7 +5,7 @@ const morgan = require("morgan");
 const cors = require("cors");
 const route = require("./routes");
 // const formidable = require("express-formidable");
-const formidable = require("./middleware/formidable.middleware");
+const formidable = require("./middlewares/formidable.middleware");
 const PORT = process.env.PORT || 3000;
 const app = express();
 

@@ -80,7 +80,7 @@ class Provinces {
     return this.provinces[provinceId];
   }
 }
-class HotelType {
+class HotelTypes {
   types;
   constructor() {
     this.types = [
@@ -104,5 +104,40 @@ class HotelType {
     return this.types.indexOf(type);
   }
 }
-module.exports = new Provinces();
-module.exports = new HotelType();
+class DeviceTypes {
+  types = new Map();
+  constructor() {
+    this.types = {
+      Bedding: [],
+      "Food And Beverage": ["Food And Beverage Facilities"],
+      Bathroom: ["Bathroom Facilities"],
+      "Media And Technology": [
+        "Complementary elements",
+        "Internet Facilities",
+        "Phone Facilities",
+        "Tv Facilities",
+      ],
+      "Service And Equipment": [
+        "Comfort Features",
+        "Electric Facilities",
+        "Temperature Air Control",
+        "Working Area",
+        "Room Services",
+        "Accessibility And Security",
+      ],
+    };
+    this.types = new Map(Object.entries(this.types));
+  }
+  getDeviceType(type = "a/b") {
+    const [type, subType] = type.split("/");
+    return { type, subType };
+  }
+  getDeviceTypeId(type) {
+    return this.types.indexOf(type);
+  }
+}
+module.exports = {
+  provinces: new Provinces(),
+  hotelTypes: new HotelTypes(),
+  deviceTypes: new DeviceTypes(),
+};

@@ -32,10 +32,23 @@ function validatePhoneNumber(phoneNumber = "") {
     ? false
     : "Phone number is not valid";
 }
+function validateCheckInCheckOut({
+  checkIn /**="2022-01-01" */,
+  checkOut /**="2022-01-01" */,
+}) {
+  if (!checkIn || !checkOut) return "Check-in and check-out date are required";
+  if (validator.isAfter(new Date().toISOString(), checkIn)) {
+    return "Check-in date must be after today";
+  }
+  if (!validator.isBefore(checkIn, checkOut))
+    return "Check-in date must be before check-out date";
+  return false;
+}
 module.exports = {
   validateEmail,
   validatePassword,
   validateUsername,
   validateFullName,
   validatePhoneNumber,
+  validateCheckInCheckOut,
 };

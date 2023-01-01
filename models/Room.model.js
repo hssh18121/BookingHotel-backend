@@ -22,6 +22,12 @@ const RoomSchema = new Schema(
     },
     size: { type: Number, default: 0 },
     hotel: { type: Schema.ObjectId, ref: "Hotel" },
+    devices: [
+      {
+        deviceId: { type: Schema.ObjectId, ref: "Device" },
+        amount: { type: Number },
+      },
+    ],
     createdAt: {
       type: Date,
       default: Date.now(),
