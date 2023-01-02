@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { Booking } = require(".");
 const Schema = mongoose.Schema;
 const BookingSchema = new Schema(
   {
@@ -27,4 +28,23 @@ const BookingSchema = new Schema(
     timestamps: true,
   }
 );
+
+BookingSchema.statics.isBooked = async ({ checkIn, checkOut, room }) => {
+  const { Booking } = require(".");
+  const bookings = await Booking.find({
+    room: room._id,
+  });
+
+  const isBooked = bookings.some((booking) => {
+    const bookingCheckIn = new Date(booking.checkinAt);
+    const bookingCheckOut = new Date(booking.checkoutAt);
+    return (
+      (checkIn.getTime() >= bookingCheckIn.getTime() &&
+        checkIn.getTime() <= bookingCheckOut.getTime()) ||
+      (checkOut.getTime() >= bookingCheckIn.getTime() &&
+        checkOut.getTime() <= bookingCheckOut.getTime())
+    );
+  });
+  return isBooked;
+};
 module.exports = mongoose.model("Booking", BookingSchema);

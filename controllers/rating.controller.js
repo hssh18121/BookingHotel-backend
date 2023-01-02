@@ -1,4 +1,5 @@
-const { Rating, Hotel } = require("../models/");
+const { Rating, Hotel, User } = require("../models/");
+const { multipleMongooseToObject } = require("../utils/mongoose");
 class RatingController {
   async rate(req, res) {
     const userId = req.user.id;
@@ -84,6 +85,42 @@ class RatingController {
         status: "success",
         message: "Update rating successfully",
       });
+    } catch (error) {
+      return res.status(503).json({
+        status: "error",
+        message: "Service error. Please try again later",
+      });
+    }
+  }
+  async getRating(req, res) {
+    try {
+      const hotel = await Hotel.findById(req.params.hotelId);
+      if (!hotel) {
+        return res
+          .status(403)
+          .json({ status: "error", message: "Can't find hotel" });
+      }
+      const results = multipleMongooseToObject(
+        await Rating.find({ hotel: hotel._id }).select("-hotel -__v")
+      );
+      let ratings = await Promise.all(
+        results.map(async (result) => {
+          const user = await User.findById(result.user).select(
+            "id username avatar"
+          );
+          result.user = user;
+          return result;
+        })
+      );
+      if (req.query.star) {
+        ratings = ratings.filter((rating) => {
+          return rating.star >= req.query.star;
+        });
+      }
+      const starAvg = ratings.reduce((p, n) => p + n.star, 0) / ratings.length;
+      return res
+        .status(200)
+        .json({ status: "success", data: { ratings, starAvg } });
     } catch (error) {
       return res.status(503).json({
         status: "error",

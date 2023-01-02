@@ -19,20 +19,7 @@ class BookingController {
       let { checkIn, checkOut } = req.body;
       checkIn = new Date(checkIn);
       checkOut = new Date(checkOut);
-
-      const bookings = await Booking.find({
-        room: room._id,
-      });
-      const isBooked = bookings.some((booking) => {
-        const bookingCheckIn = new Date(booking.checkinAt);
-        const bookingCheckOut = new Date(booking.checkoutAt);
-        return (
-          (checkIn.getTime() >= bookingCheckIn.getTime() &&
-            checkIn.getTime() <= bookingCheckOut.getTime()) ||
-          (checkOut.getTime() >= bookingCheckIn.getTime() &&
-            checkOut.getTime() <= bookingCheckOut.getTime())
-        );
-      });
+      const isBooked = await Booking.isBooked({ checkIn, checkOut, room });
       if (isBooked) {
         return res.status(400).json({
           status: "error",
@@ -57,8 +44,60 @@ class BookingController {
       });
     }
   }
-  async update(req, res) {}
-  async delete(req, res) {}
+  async update(req, res) {
+    return res.status(301).json({
+      status: "error",
+      message: "Update booking is not supported",
+      hint: "Please use delete and create new booking",
+    });
+  }
+  async delete(req, res) {
+    const user = req.user;
+    try {
+      const booking = await Booking.findById(req.params.bookingId);
+      if (!booking) {
+        return res.status(400).json({
+          status: "error",
+          message: "Booking not found",
+        });
+      }
+      if (!booking.user.equals(user._id)) {
+        return res.status(403).json({
+          status: "error",
+          message: "You are not authorized to delete this booking",
+        });
+      }
+      await booking.remove();
+      return res.status(200).json({
+        status: "success",
+        message: "Delete booking successfully",
+      });
+    } catch (error) {
+      return res.status(503).json({
+        status: "error",
+        message: "Service error. Please try again later",
+      });
+    }
+  }
   // ...
+  async getAll(req, res) {
+    const user = req.user;
+    try {
+      const room = await Room.findById(req.params.roomId);
+      if (!room) {
+        return res.status(400).json({
+          status: "error",
+          message: "Room not found",
+        });
+      }
+      const bookings = await Booking.find({ user: user._id, room: room._id });
+      return res.status(200).json({ status: "success", data: bookings });
+    } catch (error) {
+      return res.status(503).json({
+        status: "error",
+        message: "Service error. Please try again later",
+      });
+    }
+  }
 }
 module.exports = new BookingController();
