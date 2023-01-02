@@ -99,5 +99,64 @@ class BookingController {
       });
     }
   }
+  async bookings(req, res) {
+    const user = req.user;
+    let bookings = req.body.bookings;
+    if (!Array.isArray(bookings)) {
+      return res.status(400).json({
+        status: "error",
+        message: "Bookings must be an array",
+      });
+    }
+    try {
+      bookings = await Promise.all(
+        bookings.map(async ({ room, checkIn, checkOut }) => {
+          const validateErr = validateCheckInCheckOut({ checkIn, checkOut });
+          if (validateErr) {
+            return {
+              room,
+              status: "error",
+              message: validateErr,
+            };
+          }
+
+          room = await Room.findById(room);
+          if (!room) {
+            return {
+              room,
+              status: "error",
+              message: "Room not found",
+            };
+          }
+          checkIn = new Date(checkIn);
+          checkOut = new Date(checkOut);
+          const isBooked = await Booking.isBooked({ checkIn, checkOut, room });
+          if (isBooked) {
+            return {
+              room: room.id,
+              status: "error",
+              message: "Room is booked",
+            };
+          }
+          const rentalDays =
+            new Date(checkOut.getTime() - checkIn.getTime()).getDate() - 1;
+          const newBooking = await Booking.create({
+            checkinAt: checkIn,
+            checkoutAt: checkOut,
+            price: room.price * rentalDays,
+            room: room._id,
+            user: user._id,
+          });
+          return newBooking;
+        })
+      );
+      return res.status(200).json({ status: "success", data: bookings });
+    } catch (error) {
+      return res.status(503).json({
+        status: "error",
+        message: "Service error. Please try again later",
+      });
+    }
+  }
 }
 module.exports = new BookingController();
