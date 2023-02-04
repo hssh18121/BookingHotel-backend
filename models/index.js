@@ -4,4 +4,5 @@ module.exports = {
   Hotel: require("./Hotel.model"),
   Booking: require("./Booking.model"),
   Rating: require("./Rating.model"),
+  Bookmark: require("./Bookmark.model"),
 };

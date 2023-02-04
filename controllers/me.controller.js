@@ -1,4 +1,4 @@
-const { User, Booking, Rating } = require("../models");
+const { User, Booking, Rating, Bookmark } = require("../models");
 const {
   validatePassword,
   validateFullName,
@@ -22,8 +22,12 @@ class MeController {
       const ratings = await Rating.find({ user: req.user.id }).select(
         "-user -__v"
       );
+      const bookmarks = await Bookmark.find({ user: req.user.id }).select(
+        "-user -__v"
+      );
       user.bookings = bookings;
       user.ratings = ratings;
+      user.bookmarks = bookmarks;
       return res.status(200).json({ status: "success", data: { user } });
     } catch (error) {
       return res.status(503).json({

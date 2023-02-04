@@ -39,6 +39,7 @@ const HotelSchema = new Schema(
         "Pod",
       ],
     },
+    manager: { type: Schema.Types.ObjectId, ref: "User" },
     createdAt: {
       type: Date,
       default: Date.now(),

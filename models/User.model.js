@@ -40,6 +40,9 @@ const UserSchema = new Schema(
       enum: ["user", "admin", "hotel"],
       default: "user",
     },
+    isActivated: {
+      type: Boolean,
+    },
     createdAt: {
       type: Date,
       default: Date.now(),
