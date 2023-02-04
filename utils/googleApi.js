@@ -46,7 +46,8 @@ async function uploadFile(file) {
         console.log(err);
       }
     });
-    console.log(error);
+    // console.log(error);
+    throw error;
   }
 }
 async function deleteFile(fileId = "") {

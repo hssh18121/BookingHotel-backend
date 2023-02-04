@@ -1,4 +1,4 @@
-const User = require("../models").User;
+const { User, Booking, Rating } = require("../models");
 const {
   validatePassword,
   validateFullName,
@@ -6,15 +6,24 @@ const {
   validateUsername,
 } = require("../utils/validate");
 const { uploadFile, deleteFile } = require("../utils/googleApi");
+const { moongooseToObject, mongooseToObject } = require("../utils/mongoose");
 class MeController {
   /**
    * GET /api/me/:id
    */
   async getMe(req, res) {
     try {
-      const user = await User.findById(req.user.id).select(
-        "-password -__v -role"
+      const user = mongooseToObject(
+        await User.findById(req.user.id).select("-password -__v -role")
       );
+      const bookings = await Booking.find({ user: req.user.id }).select(
+        "-user -__v"
+      );
+      const ratings = await Rating.find({ user: req.user.id }).select(
+        "-user -__v"
+      );
+      user.bookings = bookings;
+      user.ratings = ratings;
       return res.status(200).json({ status: "success", data: { user } });
     } catch (error) {
       return res.status(503).json({
