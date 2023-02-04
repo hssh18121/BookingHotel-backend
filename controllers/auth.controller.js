@@ -5,9 +5,10 @@ const {
   validateEmail,
   validatePhoneNumber,
   validateFullName,
+  validateRole,
 } = require("../utils/validate");
 class AuthController {
-  async login(req = new Request(), res) {
+  async login(req = new Request(), res, next) {
     const { email, password } = req.body;
     if (!email || !password) {
       return res.status(400).json({
@@ -30,6 +31,11 @@ class AuthController {
         return res
           .status(400)
           .json({ status: "error", message: "Password is incorrect" });
+      }
+      if (user.role === "hotel") {
+        req.user = user;
+        next();
+        return;
       }
       return res.status(200).json({
         status: "success",
@@ -75,7 +81,8 @@ class AuthController {
       validatePassword(password) ||
       validateUsername(username) ||
       (phone ? validatePhoneNumber(phone) : false) ||
-      validateFullName(fullname);
+      validateFullName(fullname) ||
+      validateRole(role);
     if (validateErr) {
       return res.status(400).json({ status: "error", message: validateErr });
     }
@@ -92,6 +99,8 @@ class AuthController {
         email,
         fullname,
         phone,
+        role,
+        isActivated: role == "hotel" ? false : undefined,
       }).saveWithHashPassword();
 
       return res.status(200).json({

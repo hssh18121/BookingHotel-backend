@@ -1,7 +1,13 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models").User;
 class Authorization {
-  async protect(req = new Request(), res = new Response(), next) {
+  /**
+   *
+   * @param {Request} req
+   * @param {Response} res
+   * @param {function} next next middleware
+   */
+  async protect(req, res, next) {
     const auth = req.headers.authorization;
 
     if (!auth?.startsWith("Bearer")) {
@@ -27,6 +33,52 @@ class Authorization {
           .json({ status: "error", message: "Token expired" });
       }
     }
+  }
+  /**
+   * @brief check if hotel admin is activated
+   * @param {Request} req
+   * @param {Response} res
+   */
+  async isActivated(req, res) {
+    const user = req.user;
+    if (!user.isActivated) {
+      return res
+        .status(403)
+        .json({ status: "error", message: "You are not activated" });
+    }
+    return res.status(200).json({
+      status: "success",
+      data: {
+        token: user.genToken(),
+        expiresIn: process.env.JWT_EXPIRES_IN,
+        username: user.username,
+        userID: user.id,
+      },
+    });
+  }
+
+  isHotelAdmin(req, res, next) {
+    const user = req.user;
+    if (user.role !== "hotel") {
+      return res
+        .status(403)
+        .json({ status: "error", message: "You are not hotel admin" });
+    }
+    if (!user.isActivated)
+      return res
+        .status(403)
+        .json({ status: "error", message: "You are not activated" });
+    next();
+  }
+
+  isAdmin(req, res, next) {
+    const user = req.user;
+    if (user.role !== "admin") {
+      return res
+        .status(403)
+        .json({ status: "error", message: "You are not admin" });
+    }
+    next();
   }
 }
 module.exports = new Authorization();

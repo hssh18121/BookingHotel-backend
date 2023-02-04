@@ -44,6 +44,26 @@ function validateCheckInCheckOut({
     return "Check-in date must be before check-out date";
   return false;
 }
+/**
+ *
+ * @param {string} role
+ * @returns false if role is valid, otherwise return error message
+ */
+function validateRole(role) {
+  let mess =
+    isIn(role, ["user", "admin", "hotel"]) || !role ? false : "Role is invalid";
+  if (role === "admin") return "Admin role is not allowed";
+  return mess;
+}
+/**
+ *
+ * @param {any} key
+ * @param {Array} values
+ * @returns true if key is in values, otherwise return false
+ */
+function isIn(key, values) {
+  return values.some((v) => v === key);
+}
 module.exports = {
   validateEmail,
   validatePassword,
@@ -51,4 +71,5 @@ module.exports = {
   validateFullName,
   validatePhoneNumber,
   validateCheckInCheckOut,
+  validateRole,
 };
