@@ -48,8 +48,15 @@ class AuthController {
     }
   }
   async signup(req = new Request(), res) {
-    const { username, password, confirmPassword, email, fullname, phone } =
-      req.body;
+    const {
+      username,
+      password,
+      confirmPassword,
+      email,
+      fullname,
+      phone,
+      role,
+    } = req.body;
     if (!username || !password || !fullname || !email || !confirmPassword) {
       return res.status(400).json({
         status: "error",
