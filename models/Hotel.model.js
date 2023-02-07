@@ -17,7 +17,11 @@ const HotelSchema = new Schema(
       type: String,
       maxLength: 1023,
     },
-    image: [
+    image: {
+      type: String,
+      default: "",
+    },
+    imageLibrary: [
       {
         type: String,
         default: "",
