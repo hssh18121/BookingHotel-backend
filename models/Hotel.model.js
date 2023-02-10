@@ -43,6 +43,11 @@ const HotelSchema = new Schema(
         "Pod",
       ],
     },
+    hotelFeatures: [
+      {
+        hotelFeatureId: { type: Schema.Types.ObjectId, ref: "HotelFeature" },
+      },
+    ],
     manager: { type: Schema.Types.ObjectId, ref: "User" },
     createdAt: {
       type: Date,
