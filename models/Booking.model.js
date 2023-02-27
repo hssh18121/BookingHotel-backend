@@ -26,8 +26,12 @@ const BookingSchema = new Schema(
     timestamps: true,
   }
 );
-
-BookingSchema.statics.isBooked = async ({ checkIn, checkOut, room }) => {
+/**
+ *
+ * @param {{checkIn: Date, checkOut: Date, room }} param
+ * @returns
+ */
+BookingSchema.statics.isBooked = async function ({ checkIn, checkOut, room }) {
   const bookings = await this.find({
     room: room._id,
   });
@@ -35,11 +39,17 @@ BookingSchema.statics.isBooked = async ({ checkIn, checkOut, room }) => {
   const isBooked = bookings.some((booking) => {
     const bookingCheckIn = new Date(booking.checkinAt);
     const bookingCheckOut = new Date(booking.checkoutAt);
+    /**
+     * -----------------bci-----------bco--------
+     * ------------------------ci----------------co-------- => checkIn is between bookingCheckIn and bookingCheckOut
+     * --------ci--------------co-------- => checkOut is between bookingCheckIn and bookingCheckOut
+     */
     return (
-      (checkIn.getTime() >= bookingCheckIn.getTime() &&
-        checkIn.getTime() <= bookingCheckOut.getTime()) ||
-      (checkOut.getTime() >= bookingCheckIn.getTime() &&
-        checkOut.getTime() <= bookingCheckOut.getTime())
+      ((checkIn.getTime() >= bookingCheckIn.getTime() &&
+        checkIn.getTime() <= bookingCheckOut.getTime()) || // checkIn is between bookingCheckIn and bookingCheckOut
+        (checkOut.getTime() >= bookingCheckIn.getTime() &&
+          checkOut.getTime() <= bookingCheckOut.getTime())) && // checkOut is between bookingCheckIn and bookingCheckOut
+      booking.status !== "failure" // booking is not failed
     );
   });
   return isBooked;
