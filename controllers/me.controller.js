@@ -14,7 +14,7 @@ class MeController {
   async getMe(req, res) {
     try {
       const user = mongooseToObject(
-        await User.findById(req.user.id).select("-password -__v -role")
+        await User.findById(req.user.id).select("-password -__v")
       );
       const bookings = await Booking.find({ user: req.user.id }).select(
         "-user -__v"

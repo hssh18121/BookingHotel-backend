@@ -13,6 +13,11 @@ const drive = google.drive({
   auth: auth2Client,
 });
 const BASE_URL = "https://drive.google.com/uc?export=view&id=";
+/**
+ * Upload file to google drive
+ * @param {File} file
+ * @returns Promise<string> url of file
+ */
 async function uploadFile(file) {
   if (file.type != "image/png" && file.type != "image/jpeg") {
     fs.unlink(file.path, (err) => {
@@ -50,7 +55,11 @@ async function uploadFile(file) {
     throw error;
   }
 }
-async function deleteFile(fileId = "") {
+/**
+ * Delete file with fileId in google drive
+ * @param {string} fileId
+ */
+async function deleteFile(fileId) {
   try {
     let res = await drive.files.delete({ fileId });
   } catch (error) {

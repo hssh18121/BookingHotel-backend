@@ -1,7 +1,8 @@
 const hotelAdminRouter = require("express").Router();
 const hotelAdminController =
   require("../../../controllers/admin.controller").hotelAdminController;
-hotelAdminRouter.get("/bookings", hotelAdminController.getBookings);
-hotelAdminRouter.get("/hotel/kinds", hotelAdminController.getHotelKinds);
-hotelAdminRouter.patch("/hotel/:hotelId", hotelAdminController.updateHotel);
+hotelAdminRouter.get("/kinds", hotelAdminController.getHotelKinds);
+hotelAdminRouter.patch("/:hotelId", hotelAdminController.updateHotel);
+hotelAdminRouter.patch("/:hotelId/booking", hotelAdminController.bookingManage); //Booking management
+hotelAdminRouter.get("/", hotelAdminController.getHotels);
 module.exports = hotelAdminRouter;

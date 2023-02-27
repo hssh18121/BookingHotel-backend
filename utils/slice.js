@@ -1,3 +1,9 @@
+/**
+ * Slice array
+ * @param {any[]} arr
+ * @param {{limit?: number, from?: number, to?: number}} options
+ * @returns
+ */
 function slice(arr, { limit, from, to }) {
   if (limit) {
     arr = arr.slice(0, limit);
