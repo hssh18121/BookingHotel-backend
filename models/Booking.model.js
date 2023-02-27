@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { Booking } = require(".");
 const Schema = mongoose.Schema;
 const BookingSchema = new Schema(
   {
@@ -29,8 +28,7 @@ const BookingSchema = new Schema(
 );
 
 BookingSchema.statics.isBooked = async ({ checkIn, checkOut, room }) => {
-  const { Booking } = require(".");
-  const bookings = await Booking.find({
+  const bookings = await this.find({
     room: room._id,
   });
 

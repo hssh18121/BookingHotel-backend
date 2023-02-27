@@ -82,7 +82,7 @@ class HotelAdminController {
       });
     }
   }
-  async getHotelKinds(req, res) {
+  getHotelKinds(req, res) {
     res
       .status(200)
       .json({ status: "success", data: Hotel.schema.path("kinds").enumValues });
@@ -111,17 +111,15 @@ class HotelAdminController {
           .status(400)
           .json({ status: "error", message: "Can't find hotel" });
       }
-      return res
-        .status(200)
-        .json({
-          status: "success",
-          data: {
-            hotel: await Hotel.findOne({
-              _id: req.params.hotelId,
-              manager: req.user._id,
-            }),
-          },
-        });
+      return res.status(200).json({
+        status: "success",
+        data: {
+          hotel: await Hotel.findOne({
+            _id: req.params.hotelId,
+            manager: req.user._id,
+          }),
+        },
+      });
     } catch (error) {
       if (error.name === "ValidationError") {
         return res
