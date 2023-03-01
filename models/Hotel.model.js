@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const HotelFeature = require("./HotelFeature.model");
 const HotelSchema = new Schema(
   {
     name: {
@@ -43,7 +44,18 @@ const HotelSchema = new Schema(
         "Pod",
       ],
     },
-    hotelFeatures: [{ type: Schema.Types.ObjectId, ref: "HotelFeature" }],
+    hotelFeatures: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "HotelFeature",
+        validate: async function (hotelFeaturesId) {
+          const hotelFeature = await HotelFeature.findById(hotelFeaturesId);
+          if (!hotelFeature)
+            throw new Error(`Can't find hotel feature ${hotelFeaturesId}`);
+          return true;
+        },
+      },
+    ],
     manager: { type: Schema.Types.ObjectId, ref: "User" },
     createdAt: {
       type: Date,

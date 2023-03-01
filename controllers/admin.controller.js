@@ -87,7 +87,7 @@ class HotelAdminController {
    * @param {Request} req
    * @param {Response} res
    */
-  async bookingManage(req, res) {
+  async updateBooking(req, res) {
     const { roomId, bookingId, status } = req.body;
     if (!ObjectId.isValid(bookingId)) {
       return res
@@ -122,7 +122,7 @@ class HotelAdminController {
       const booking = await Booking.findOne({
         _id: bookingId,
         room: room._id,
-      });
+      }).select("-__v");
       if (!booking) {
         return res
           .status(400)
@@ -130,18 +130,15 @@ class HotelAdminController {
       }
       booking.status = status;
       await booking.save();
-      return res.status(200).json({ status: "success", message: booking });
+      return res.status(200).json({ status: "success", data: { booking } });
     } catch (error) {
       if (error.name === "ValidationError") {
-        return res
-          .status(400)
-          .json({
-            status: "error",
-            message: error.message,
-            hint: Booking.schema.path("status").enumValues,
-          });
+        return res.status(400).json({
+          status: "error",
+          message: error.message,
+          hint: Booking.schema.path("status").enumValues,
+        });
       }
-      console.log(error);
       return res.status(500).json({
         status: "error",
         message: "Service error. Please try again later",
@@ -160,17 +157,19 @@ class HotelAdminController {
           .status(400)
           .json({ status: "error", message: "Invalid hotel's id" });
       }
-      const { name, description, address, province, kinds } = req.body;
+      const { name, description, address, province, kinds, hotelFeatures } =
+        req.body;
       await Hotel.validate({
         name,
         description,
         address,
         province,
         kinds,
+        hotelFeatures,
       });
       let result = await Hotel.updateOne(
         { _id: req.params.hotelId, manager: req.user._id },
-        { name, description, address, province, kinds }
+        { name, description, address, province, kinds, hotelFeatures }
       );
       if (result.matchedCount === 0) {
         return res
@@ -188,6 +187,7 @@ class HotelAdminController {
       });
     } catch (error) {
       if (error.name === "ValidationError") {
+        console.log(error);
         return res
           .status(400)
           .json({ status: "error", message: error.message });
