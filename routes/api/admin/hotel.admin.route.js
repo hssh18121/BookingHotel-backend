@@ -3,35 +3,36 @@ const {
   validateIdParams,
 } = require("../../../middlewares/validate.middleware");
 const authMiddleware = require("../../../middlewares/auth.middleware");
-
 const hotelAdminController =
   require("../../../controllers/admin.controller").hotelAdminController;
 const roomController = require("../../../controllers/room.controller");
-hotelAdminRouter.patch(
-  "/:hotelId",
-  validateIdParams,
-  hotelAdminController.updateHotel
-);
+const ratingController = require("../../../controllers/rating.controller");
+const hotelController = require("../../../controllers/hotel.controller");
+const bookingController = require("../../../controllers/booking.controller");
+hotelAdminRouter.patch("/:hotelId", validateIdParams, hotelController.update);
+
 hotelAdminRouter.patch(
   "/:hotelId/booking",
   validateIdParams,
-  hotelAdminController.updateBooking
+  bookingController.updateStatus
 );
+
 hotelAdminRouter
   .route("/:hotelId/room")
   .all(validateIdParams, authMiddleware.isHasPermission)
   .post(roomController.createRoom);
+
 hotelAdminRouter
   .route("/:hotelId/room/:roomId")
   .all(validateIdParams, authMiddleware.isHasPermission)
   .patch(roomController.updateRoom)
   .delete(roomController.deleteRoom);
 
-hotelAdminRouter.delete(
-  "/:hotelId/rating",
-  validateIdParams,
-  mock //hotelAdminController.deleteRating
-);
+hotelAdminRouter
+  .route("/:hotelId/rating/:ratingId")
+  .all(validateIdParams, authMiddleware.isHasPermission)
+  .delete(ratingController.delete);
+
 hotelAdminRouter.get(
   "/:hotelId/statistic",
   validateIdParams,

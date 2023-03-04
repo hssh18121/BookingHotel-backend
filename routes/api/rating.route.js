@@ -1,8 +1,11 @@
 const router = require("express").Router();
 const ratingController = require("../../controllers/rating.controller");
 const authMiddleware = require("../../middlewares/auth.middleware");
-router.post("/:hotelId", authMiddleware.protect, ratingController.rate);
-router.delete("/:hotelId", authMiddleware.protect, ratingController.unRate);
-router.put("/:hotelId", authMiddleware.protect, ratingController.updateRating);
-router.get("/:hotelId", ratingController.getRating);
+router
+  .route("/:hotelId")
+  .get(ratingController.getRating)
+  .all(authMiddleware.protect)
+  .post(ratingController.rate)
+  .delete(ratingController.unRate)
+  .put(ratingController.updateRating);
 module.exports = router;

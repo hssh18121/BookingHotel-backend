@@ -4,6 +4,11 @@ const BookingSchema = new Schema(
   {
     room: { type: Schema.Types.ObjectId, ref: "Room", required: true },
     user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    userInfo: {
+      name: { type: String, maxLength: 255, minLength: 6 },
+      phone: { type: String, maxLength: 11, minLength: 9 },
+      email: { type: String, lowercase: true },
+    },
     status: {
       type: String,
       enum: ["success", "failure", "processing"],
