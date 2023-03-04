@@ -1,5 +1,6 @@
-const { User, Room, Booking } = require("../models");
+const { Room, Booking, Hotel } = require("../models");
 const { validateCheckInCheckOut } = require("../utils/validate");
+const ObjectId = require("mongoose").Types.ObjectId;
 class BookingController {
   // ...
   async booking(req, res) {
@@ -34,6 +35,7 @@ class BookingController {
         price: room.price * rentalDays,
         room: room._id,
         user: user._id,
+        userInfo: req.body.userInfo,
       });
       return res.status(200).json({ status: "success", data: newBooking });
     } catch (error) {
@@ -110,7 +112,7 @@ class BookingController {
     }
     try {
       bookings = await Promise.all(
-        bookings.map(async ({ room, checkIn, checkOut }) => {
+        bookings.map(async ({ room, checkIn, checkOut, userInfo }) => {
           const validateErr = validateCheckInCheckOut({ checkIn, checkOut });
           if (validateErr) {
             return {
@@ -146,6 +148,7 @@ class BookingController {
             price: room.price * rentalDays,
             room: room._id,
             user: user._id,
+            userInfo,
           });
           return newBooking;
         })
@@ -153,6 +156,64 @@ class BookingController {
       return res.status(200).json({ status: "success", data: bookings });
     } catch (error) {
       return res.status(503).json({
+        status: "error",
+        message: "Service error. Please try again later",
+      });
+    }
+  }
+  async updateStatus(req, res) {
+    const { roomId, bookingId, status } = req.body;
+    if (!ObjectId.isValid(bookingId)) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "Invalid booking's id" });
+    }
+    if (!ObjectId.isValid(roomId)) {
+      return res
+        .status(400)
+        .json({ status: "error", message: "Invalid room's id" });
+    }
+    try {
+      await Booking.validate({ status }, ["status"]);
+      const hotel = await Hotel.findOne({
+        _id: req.params.hotelId,
+        manager: req.user._id,
+      });
+      if (!hotel) {
+        return res
+          .status(400)
+          .json({ status: "error", message: "Can't find hotel" });
+      }
+      const room = await Room.findOne({
+        _id: roomId,
+        hotel: hotel._id,
+      });
+      if (!room) {
+        return res
+          .status(400)
+          .json({ status: "error", message: "Can't find room" });
+      }
+      const booking = await Booking.findOne({
+        _id: bookingId,
+        room: room._id,
+      }).select("-__v");
+      if (!booking) {
+        return res
+          .status(400)
+          .json({ status: "error", message: "Can't find booking" });
+      }
+      booking.status = status;
+      await booking.save();
+      return res.status(200).json({ status: "success", data: { booking } });
+    } catch (error) {
+      if (error.name === "ValidationError") {
+        return res.status(400).json({
+          status: "error",
+          message: error.message,
+          hint: Booking.schema.path("status").enumValues,
+        });
+      }
+      return res.status(500).json({
         status: "error",
         message: "Service error. Please try again later",
       });

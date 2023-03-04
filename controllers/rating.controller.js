@@ -61,6 +61,26 @@ class RatingController {
       });
     }
   }
+  async delete(req, res) {
+    let ratingId = req.params.ratingId;
+    try {
+      const rating = await Rating.findOneAndDelete({ _id: ratingId });
+      if (!rating) {
+        return res.status(403).json({
+          status: "error",
+          message: "Rating not found",
+        });
+      }
+      res
+        .status(200)
+        .json({ status: "success", message: "Delete rating successfully" });
+    } catch (error) {
+      res.status(503).json({
+        status: "error",
+        message: "Service error. Please try again later",
+      });
+    }
+  }
   async updateRating(req, res) {
     const userId = req.user.id;
     const { star, comment } = req.body;
