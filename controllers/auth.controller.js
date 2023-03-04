@@ -32,10 +32,13 @@ class AuthController {
           .status(400)
           .json({ status: "error", message: "Password is incorrect" });
       }
-      if (user.role === "hotel") {
-        req.user = user;
-        next();
-        return;
+      if (!user.isActivated) {
+        return res
+          .status(400)
+          .json({
+            status: "error",
+            message: "User is not activated or has been blocked",
+          });
       }
       return res.status(200).json({
         status: "success",
