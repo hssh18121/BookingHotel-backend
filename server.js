@@ -18,7 +18,12 @@ app.use(
 // app.use(express.json());
 app.use(formidable);
 // app.use(formidable(null, null));
-app.use(morgan("combined"));
+app.use(
+  morgan(
+    "dev"
+    //"combined"
+  )
+);
 route(app);
 app.listen(PORT, () => {
   console.log(`Example app listening on port localhost:${PORT}`);

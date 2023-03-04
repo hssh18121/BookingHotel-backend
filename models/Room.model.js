@@ -8,8 +8,8 @@ const RoomSchema = new Schema(
       required: true,
     },
     peopleAmount: {
-      adults: { type: Number, max: 5 },
-      child: { type: Number, max: 5 },
+      adults: { type: Number, min: 0, max: 5, required: true },
+      child: { type: Number, min: 0, max: 5, required: true },
     },
     description: {
       type: String,
@@ -21,7 +21,7 @@ const RoomSchema = new Schema(
       required: true,
     },
     size: { type: Number, default: 0 },
-    hotel: { type: Schema.Types.ObjectId, ref: "Hotel" },
+    hotel: { type: Schema.Types.ObjectId, ref: "Hotel", required: true },
     devices: [
       {
         deviceId: { type: Schema.Types.ObjectId, ref: "Device" },
