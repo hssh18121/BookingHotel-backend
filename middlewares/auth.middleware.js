@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models").User;
+const { User, Hotel } = require("../models");
 class Authorization {
   /**
    *
@@ -79,6 +79,21 @@ class Authorization {
         .json({ status: "error", message: "You are not admin" });
     }
     next();
+  }
+  async isHasPermission(req, res, next) {
+    try {
+      const user = req.user;
+      const hotelId = req.params.hotelId;
+      const hotel = await Hotel.findById(hotelId);
+      if (hotel?.manager?.toString() !== user._id.toString()) {
+        res.status(403).json({
+          status: "error",
+          message: "You are not allowed to manage this hotel",
+        });
+      } else next();
+    } catch (error) {
+      res.status(500).json({ status: "error", message: error.message });
+    }
   }
 }
 module.exports = new Authorization();

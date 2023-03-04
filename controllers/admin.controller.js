@@ -152,11 +152,6 @@ class HotelAdminController {
   }
   async updateHotel(req, res) {
     try {
-      if (!ObjectId.isValid(req.params.hotelId)) {
-        return res
-          .status(400)
-          .json({ status: "error", message: "Invalid hotel's id" });
-      }
       const { name, description, address, province, kinds, hotelFeatures } =
         req.body;
       await Hotel.validate({
