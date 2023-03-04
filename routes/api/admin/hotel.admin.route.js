@@ -9,11 +9,18 @@ const roomController = require("../../../controllers/room.controller");
 const ratingController = require("../../../controllers/rating.controller");
 const hotelController = require("../../../controllers/hotel.controller");
 const bookingController = require("../../../controllers/booking.controller");
-hotelAdminRouter.patch("/:hotelId", validateIdParams, hotelController.update);
+const { isHasPermission } = require("../../../middlewares/auth.middleware");
+hotelAdminRouter.patch(
+  "/:hotelId",
+  validateIdParams,
+  isHasPermission,
+  hotelController.update
+);
 
 hotelAdminRouter.patch(
   "/:hotelId/booking",
   validateIdParams,
+  isHasPermission,
   bookingController.updateStatus
 );
 

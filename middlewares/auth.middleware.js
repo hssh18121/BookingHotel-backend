@@ -85,12 +85,21 @@ class Authorization {
       const user = req.user;
       const hotelId = req.params.hotelId;
       const hotel = await Hotel.findById(hotelId);
-      if (hotel?.manager?.toString() !== user._id.toString()) {
+      if (
+        !hotel ||
+        (hotel.manager?.toString() !== user._id.toString() &&
+          user.role !== "admin")
+      ) {
         res.status(403).json({
           status: "error",
-          message: "You are not allowed to manage this hotel",
+          message: hotel
+            ? "You are not allowed to manage this hotel"
+            : "Hotel does not exist",
         });
-      } else next();
+      } else {
+        req.hotel = hotel;
+        next();
+      }
     } catch (error) {
       res.status(500).json({ status: "error", message: error.message });
     }

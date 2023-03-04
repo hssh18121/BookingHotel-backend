@@ -175,24 +175,7 @@ class BookingController {
     }
     try {
       await Booking.validate({ status }, ["status"]);
-      const hotel = await Hotel.findOne({
-        _id: req.params.hotelId,
-        manager: req.user._id,
-      });
-      if (!hotel) {
-        return res
-          .status(400)
-          .json({ status: "error", message: "Can't find hotel" });
-      }
-      const room = await Room.findOne({
-        _id: roomId,
-        hotel: hotel._id,
-      });
-      if (!room) {
-        return res
-          .status(400)
-          .json({ status: "error", message: "Can't find room" });
-      }
+      const room = await Room.findById(roomId);
       const booking = await Booking.findOne({
         _id: bookingId,
         room: room._id,

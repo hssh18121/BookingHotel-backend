@@ -84,45 +84,53 @@ class HotelController {
       });
     }
   }
-
-  async update(req, res) {
+  async create(req, res) {
     try {
-      const { name, description, address, province, kinds, hotelFeatures } =
-        req.body;
-      await Hotel.validate({
-        name,
-        description,
-        address,
-        province,
-        kinds,
-        hotelFeatures,
-      });
-      let result = await Hotel.updateOne(
-        { _id: req.params.hotelId, manager: req.user._id },
-        { name, description, address, province, kinds, hotelFeatures }
-      );
-      if (result.matchedCount === 0) {
+      await Hotel.validate(req.body);
+      const hotel = await Hotel.create(req.body);
+      res.status(200).json({ status: "success", data: { hotel } });
+    } catch (error) {
+      if (error.name === "ValidationError") {
         return res
           .status(400)
-          .json({ status: "error", message: "Can't find hotel" });
+          .json({ status: "error", message: error.message });
       }
-      return res.status(200).json({
+      res.status(500).json({
+        status: "error",
+        message: "Service error. Please try again later",
+      });
+    }
+  }
+  async update(req, res) {
+    try {
+      await Hotel.validate(req.body);
+      let hotel = Object.assign(req.hotel, req.body);
+      hotel.save();
+      res.status(200).json({
         status: "success",
-        data: {
-          hotel: await Hotel.findOne({
-            _id: req.params.hotelId,
-            manager: req.user._id,
-          }),
-        },
+        data: { hotel },
       });
     } catch (error) {
       if (error.name === "ValidationError") {
-        console.log(error);
         return res
           .status(400)
           .json({ status: "error", message: error.message });
       }
       return res.status(500).json({
+        status: "error",
+        message: "Service error. Please try again later",
+      });
+    }
+  }
+  async delete(req, res) {
+    try {
+      await req.hotel.remove();
+      res.status(200).json({
+        status: "success",
+        message: "Delete hotel successfully",
+      });
+    } catch (error) {
+      res.status(500).json({
         status: "error",
         message: "Service error. Please try again later",
       });
