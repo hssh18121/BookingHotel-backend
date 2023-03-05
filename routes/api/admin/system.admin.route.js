@@ -6,11 +6,8 @@ const {
 } = require("../../../middlewares/validate.middleware");
 const hotelController = require("../../../controllers/hotel.controller");
 const { isHasPermission } = require("../../../middlewares/auth.middleware");
-systemAdminApi.patch(
-  "/activate/:hotelAdminId",
-  validateIdParams,
-  systemAdminController.activateHotelAdmin
-);
+const ratingController = require("../../../controllers/rating.controller");
+
 systemAdminApi.get("/hotel-admins", systemAdminController.getHotelAdmins);
 systemAdminApi.route("/hotel").post(hotelController.create);
 systemAdminApi
@@ -18,4 +15,29 @@ systemAdminApi
   .all(validateIdParams, isHasPermission)
   .patch(hotelController.update)
   .delete(hotelController.delete);
+
+systemAdminApi.patch(
+  "/activate/:id",
+  validateIdParams,
+  systemAdminController.activate
+);
+systemAdminApi.patch(
+  "/block/:id",
+  validateIdParams,
+  systemAdminController.block
+);
+
+systemAdminApi.get("/ratings", ratingController.getRatings);
+systemAdminApi.delete(
+  "/rating/:ratingId",
+  validateIdParams,
+  ratingController.delete
+);
+
+systemAdminApi.patch(
+  "/manager/:managerId",
+  validateIdParams,
+  systemAdminController.updateManager
+);
+systemAdminApi.patch("/manager", systemAdminController.removeManager);
 module.exports = systemAdminApi;
