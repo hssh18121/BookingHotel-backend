@@ -33,12 +33,10 @@ class AuthController {
           .json({ status: "error", message: "Password is incorrect" });
       }
       if (!user.isActivated) {
-        return res
-          .status(400)
-          .json({
-            status: "error",
-            message: "User is not activated or has been blocked",
-          });
+        return res.status(400).json({
+          status: "error",
+          message: "User is not activated or has been blocked",
+        });
       }
       return res.status(200).json({
         status: "success",
@@ -64,7 +62,7 @@ class AuthController {
       email,
       fullname,
       phone,
-      role,
+      role = "user",
     } = req.body;
     if (!username || !password || !fullname || !email || !confirmPassword) {
       return res.status(400).json({
@@ -103,7 +101,7 @@ class AuthController {
         fullname,
         phone,
         role,
-        isActivated: role == "hotel" ? false : undefined,
+        isActivated: role == "user" ? true : false,
       }).saveWithHashPassword();
 
       return res.status(200).json({
