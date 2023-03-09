@@ -41,5 +41,6 @@ systemAdminApi.patch(
 );
 systemAdminApi.get("/statistics", systemAdminController.getStatistics);
 systemAdminApi.get("/users", systemAdminController.getUsers);
+systemAdminApi.get("/bookings", systemAdminController.getBookings);
 systemAdminApi.patch("/manager", systemAdminController.removeManager);
 module.exports = systemAdminApi;
