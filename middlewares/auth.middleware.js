@@ -86,9 +86,10 @@ class Authorization {
       const hotelId = req.params.hotelId;
       const hotel = await Hotel.findById(hotelId);
       if (
-        !hotel ||
-        (hotel.manager?.toString() !== user._id.toString() &&
-          user.role !== "admin")
+        !hotel
+        // ||
+        // (hotel.manager?.toString() !== user._id.toString() &&
+        //   user.role !== "admin")
       ) {
         res.status(403).json({
           status: "error",
