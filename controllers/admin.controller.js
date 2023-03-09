@@ -1,7 +1,9 @@
 const { User, Hotel, Room, Booking } = require("../models");
 const ObjectId = require("mongoose").Types.ObjectId;
-const multipleMongooseToObject =
-  require("../utils/mongoose").multipleMongooseToObject;
+const {
+  multipleMongooseToObject,
+  mongooseToObject,
+} = require("../utils/mongoose");
 class SystemAdminController {
   /**
    * @brief activate hotel admin (api/admin/system/activate/:id)
@@ -155,6 +157,28 @@ class SystemAdminController {
     try {
       const users = await User.find({ role: "user" }).select("-__v -password");
       res.status(200).json({ status: "success", data: { users } });
+    } catch (error) {
+      console.log(error);
+      res.status(503).json({
+        status: "error",
+        message: "Service error. Please try again later",
+      });
+    }
+  }
+  async getBookings(req, res) {
+    try {
+      let bookings = multipleMongooseToObject(
+        await Booking.find().select("-__v")
+      );
+      for await (let booking of bookings) {
+        booking.room = mongooseToObject(
+          await Room.findById(booking.room).select("-__v")
+        );
+        booking.room.hotel = mongooseToObject(
+          await Hotel.findById(booking.room.hotel).select("-__v")
+        );
+      }
+      res.status(200).json({ status: "success", data: { bookings } });
     } catch (error) {
       console.log(error);
       res.status(503).json({
