@@ -12,5 +12,10 @@ adminApi.use(
   hotel
 );
 
-adminApi.use("/system", authMiddleware.protect, authMiddleware.isAdmin, system);
+adminApi.use(
+  "/system",
+  authMiddleware.protect,
+  authMiddleware.isHotelAdmin,
+  system
+);
 module.exports = adminApi;
