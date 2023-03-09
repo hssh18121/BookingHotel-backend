@@ -39,5 +39,7 @@ systemAdminApi.patch(
   validateIdParams,
   systemAdminController.updateManager
 );
+systemAdminApi.get("/statistics", systemAdminController.getStatistics);
+systemAdminApi.get("/users", systemAdminController.getUsers);
 systemAdminApi.patch("/manager", systemAdminController.removeManager);
 module.exports = systemAdminApi;

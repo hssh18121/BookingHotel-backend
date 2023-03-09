@@ -124,6 +124,45 @@ class SystemAdminController {
       });
     }
   }
+  async getStatistics(req, res) {
+    try {
+      const statistics = {};
+      statistics.totalUsers = await User.countDocuments({ role: "user" });
+      //Doanh thu đặt phòng
+      const totalRevenue = await Booking.aggregate([
+        {
+          $group: {
+            _id: null,
+            total: { $sum: "$price" },
+            count: { $sum: 1 },
+          },
+        },
+      ]);
+      statistics.totalRevenue = totalRevenue[0].total;
+      statistics.totalBookings = totalRevenue[0].count;
+      statistics.totalHotels = await Hotel.countDocuments();
+      statistics.totalRooms = await Room.countDocuments();
+      res.status(200).json({ status: "success", data: { statistics } });
+    } catch (error) {
+      console.log(error);
+      res.status(503).json({
+        status: "error",
+        message: "Service error. Please try again later",
+      });
+    }
+  }
+  async getUsers(req, res) {
+    try {
+      const users = await User.find({ role: "user" }).select("-__v -password");
+      res.status(200).json({ status: "success", data: { users } });
+    } catch (error) {
+      console.log(error);
+      res.status(503).json({
+        status: "error",
+        message: "Service error. Please try again later",
+      });
+    }
+  }
 }
 class HotelAdminController {
   async getHotels(req, res) {
